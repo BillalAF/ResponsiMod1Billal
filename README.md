@@ -6,6 +6,7 @@ Proyek ini merupakan tugas responsi untuk modul Pembuatan API dengan JavaScript.
 
 Tujuan utama proyek ini adalah untuk mempermudah proses pencatatan, pemantauan dari sebuah peminjaman buku.
 
+Link hasil deploy : https://pinjambuku-billal-responsi.vercel.app/
 ## Tujuan
 
 1. Mengimplementasikan konsep CRUD (Create, Read, Update, Delete) dalam REST API.
