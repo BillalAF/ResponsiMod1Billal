@@ -1,15 +1,34 @@
 import { supabase } from '../config/supabase.js';
 
+// Normalisasi nilai status agar cocok dengan check constraint database
+function normalizeStatusForDB(status) {
+  if (!status) return undefined;
+  const s = String(status).trim().toLowerCase();
+  if (s === 'dipinjam' || s === 'borrowed') return 'BORROWED';
+  if (s === 'kembali' || s === 'returned') return 'RETURNED';
+  if (s === 'terlambat' || s === 'overdue') return 'OVERDUE';
+  return status;
+}
+
 export const LoanModel = {
-  // 1. Ambil semua data peminjaman (bisa difilter status)
+  // 1. Ambil semua data peminjaman (Mendukung Filter Query ?status=...)
   async getAllLoans(status) {
     let query = supabase
       .from('loans')
       .select('id, book_id, member_id, loan_date, due_date, return_date, status, books(title), members(full_name)');
 
     if (status) {
-      // Gunakan eq atau ilike untuk filter status (case-insensitive)
-      query = query.ilike('status', status);
+      const s = String(status).trim().toLowerCase();
+      let statusList = [status];
+      // Mendukung pencarian baik dengan istilah bahasa Indonesia maupun bahasa Inggris (BORROWED, OVERDUE, RETURNED)
+      if (s === 'terlambat' || s === 'overdue') {
+        statusList = ['Terlambat', 'terlambat', 'OVERDUE', 'overdue'];
+      } else if (s === 'dipinjam' || s === 'borrowed') {
+        statusList = ['Dipinjam', 'dipinjam', 'BORROWED', 'borrowed'];
+      } else if (s === 'kembali' || s === 'returned') {
+        statusList = ['Kembali', 'kembali', 'RETURNED', 'returned'];
+      }
+      query = query.in('status', statusList);
     }
 
     const { data, error } = await query;
@@ -17,7 +36,16 @@ export const LoanModel = {
       // Fallback jika relasi foreign key belum dibuat di Supabase
       let fallbackQuery = supabase.from('loans').select('*');
       if (status) {
-        fallbackQuery = fallbackQuery.ilike('status', status);
+        const s = String(status).trim().toLowerCase();
+        let statusList = [status];
+        if (s === 'terlambat' || s === 'overdue') {
+          statusList = ['Terlambat', 'terlambat', 'OVERDUE', 'overdue'];
+        } else if (s === 'dipinjam' || s === 'borrowed') {
+          statusList = ['Dipinjam', 'dipinjam', 'BORROWED', 'borrowed'];
+        } else if (s === 'kembali' || s === 'returned') {
+          statusList = ['Kembali', 'kembali', 'RETURNED', 'returned'];
+        }
+        fallbackQuery = fallbackQuery.in('status', statusList);
       }
       const fallbackResult = await fallbackQuery;
       if (fallbackResult.error) throw fallbackResult.error;
@@ -48,9 +76,14 @@ export const LoanModel = {
 
   // 3. Tambah peminjaman baru (Create)
   async createLoan(payload) {
+    const finalPayload = { ...payload };
+    if (finalPayload.status) {
+      finalPayload.status = normalizeStatusForDB(finalPayload.status);
+    }
+
     const { data, error } = await supabase
       .from('loans')
-      .insert([payload])
+      .insert([finalPayload])
       .select();
 
     if (error) throw error;
@@ -59,9 +92,14 @@ export const LoanModel = {
 
   // 4. Perbarui data peminjaman (Update)
   async updateLoan(id, payload) {
+    const finalPayload = { ...payload };
+    if (finalPayload.status) {
+      finalPayload.status = normalizeStatusForDB(finalPayload.status);
+    }
+
     const { data, error } = await supabase
       .from('loans')
-      .update(payload)
+      .update(finalPayload)
       .eq('id', id)
       .select();
 
