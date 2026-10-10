@@ -1,4 +1,4 @@
-# REST API PEminjaman Buku
+# REST API Peminjaman Buku
 
 ## Deskripsi Umum
 
