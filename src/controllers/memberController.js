@@ -1,7 +1,6 @@
 import { MemberModel } from '../models/memberModel.js';
 
 export const MemberController = {
-  // Mendapatkan semua daftar anggota
   async getAllMembers(req, res) {
     try {
       const members = await MemberModel.getAll();
@@ -11,7 +10,6 @@ export const MemberController = {
     }
   },
 
-  // Mendaftarkan anggota baru
   async registerMember(req, res) {
     try {
       const newMember = await MemberModel.create(req.body);

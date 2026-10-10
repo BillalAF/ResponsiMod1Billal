@@ -1,7 +1,6 @@
 import { supabase } from '../config/supabase.js';
 
 export const BookModel = {
-  // Mengambil semua buku dari Supabase
   async getAll() {
     const { data, error } = await supabase
       .from('books')

@@ -1,6 +1,5 @@
 import { LoanModel } from '../models/loanModel.js';
 
-// Regex untuk validasi UUID v4 / v1
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function isValidUUID(value) {
@@ -8,7 +7,6 @@ function isValidUUID(value) {
 }
 
 export const LoanController = {
-  // READ: GET /loans atau GET /loans?status=Terlambat
   async getLoans(req, res) {
     try {
       const { status } = req.query;
@@ -26,7 +24,6 @@ export const LoanController = {
     }
   },
 
-  // READ: GET /loans/:id
   async getLoanById(req, res) {
     try {
       const { id } = req.params;
@@ -51,7 +48,6 @@ export const LoanController = {
     }
   },
 
-  // CREATE: POST /loans
   async createLoan(req, res) {
     try {
       const { book_id, member_id, due_date } = req.body;
@@ -96,7 +92,6 @@ export const LoanController = {
     }
   },
 
-  // UPDATE: PUT /loans/:id
   async updateLoan(req, res) {
     try {
       const { id } = req.params;
@@ -124,7 +119,6 @@ export const LoanController = {
     }
   },
 
-  // DELETE: DELETE /loans/:id
   async deleteLoan(req, res) {
     try {
       const { id } = req.params;

@@ -11,10 +11,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware body parser JSON
 app.use(express.json());
 
-// Endpoint info & health check
 app.get('/', (req, res) => {
   res.json({
     message: 'API Sistem Peminjaman Buku (Supabase + Express) siap digunakan!',
@@ -31,11 +29,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// Routing peminjaman (mendukung /loans dan /api/loans untuk Postman)
 app.use('/loans', loanRoutes);
 app.use('/api/loans', loanRoutes);
 
-// Routing pendukung lainnya
 app.use('/books', bookRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/members', memberRoutes);
@@ -45,12 +41,10 @@ app.use('/api/authors', authorRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/api/categories', categoryRoutes);
 
-// Handle 404 jika route tidak ditemukan
 app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Endpoint tidak ditemukan' });
 });
 
-// Menjalankan server
 app.listen(PORT, () => {
   console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
 });

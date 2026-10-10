@@ -1,6 +1,5 @@
 import { supabase } from '../config/supabase.js';
 
-// Normalisasi nilai status agar cocok dengan check constraint database
 function normalizeStatusForDB(status) {
   if (!status) return undefined;
   const s = String(status).trim().toLowerCase();
@@ -11,7 +10,6 @@ function normalizeStatusForDB(status) {
 }
 
 export const LoanModel = {
-  // 1. Ambil semua data peminjaman (Mendukung Filter Query ?status=...)
   async getAllLoans(status) {
     let query = supabase
       .from('loans')
@@ -20,7 +18,6 @@ export const LoanModel = {
     if (status) {
       const s = String(status).trim().toLowerCase();
       let statusList = [status];
-      // Mendukung pencarian baik dengan istilah bahasa Indonesia maupun bahasa Inggris (BORROWED, OVERDUE, RETURNED)
       if (s === 'terlambat' || s === 'overdue') {
         statusList = ['Terlambat', 'terlambat', 'OVERDUE', 'overdue'];
       } else if (s === 'dipinjam' || s === 'borrowed') {
@@ -33,7 +30,6 @@ export const LoanModel = {
 
     const { data, error } = await query;
     if (error) {
-      // Fallback jika relasi foreign key belum dibuat di Supabase
       let fallbackQuery = supabase.from('loans').select('*');
       if (status) {
         const s = String(status).trim().toLowerCase();
@@ -54,7 +50,6 @@ export const LoanModel = {
     return data;
   },
 
-  // 2. Ambil detail peminjaman berdasarkan ID
   async getLoanById(id) {
     const { data, error } = await supabase
       .from('loans')
@@ -74,7 +69,6 @@ export const LoanModel = {
     return data;
   },
 
-  // 3. Tambah peminjaman baru (Create)
   async createLoan(payload) {
     const finalPayload = { ...payload };
     if (finalPayload.status) {
@@ -90,7 +84,6 @@ export const LoanModel = {
     return data && data[0] ? data[0] : null;
   },
 
-  // 4. Perbarui data peminjaman (Update)
   async updateLoan(id, payload) {
     const finalPayload = { ...payload };
     if (finalPayload.status) {
@@ -107,7 +100,6 @@ export const LoanModel = {
     return data && data[0] ? data[0] : null;
   },
 
-  // 5. Hapus peminjaman (Delete)
   async deleteLoan(id) {
     const { data, error } = await supabase
       .from('loans')
